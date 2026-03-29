@@ -9,7 +9,7 @@ app = FastAPI(title="AI Money Mentor API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["*"],  # change later to frontend URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -25,3 +25,7 @@ app.include_router(planner.router, prefix="/api/planner", tags=["Financial Plann
 @app.get("/")
 def root():
     return {"status": "AI Money Mentor API running"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}
