@@ -284,3 +284,212 @@ async def generate_comprehensive_analysis(
             "rationale": parsed.get("rationale", []),
         },
     }
+
+
+def _tax_wizard_system_prompt() -> str:
+    return (
+        "You are an Indian tax planning engine. "
+        "Compute tax analysis from input data and return strict JSON only. "
+        "Use Indian slabs and cess assumptions in your internal math. "
+        "Return keys exactly: tax_analysis, tax_bracket, missed_deductions, recommendations, income_profile. "
+        "tax_analysis must include total_income, taxable_income_old_regime, taxable_income_new_regime, tax_old_regime, tax_new_regime, recommended_regime, estimated_tax_saved. "
+        "tax_bracket must be one of 5%, 20%, 30%. "
+        "missed_deductions must include section, unused_limit, note. "
+        "recommendations must include instrument, why and optionally risk_fit or liquidity. "
+        "income_profile must include multiple_income_streams and future_income_impact. "
+        "All numeric values must be numbers. Do not include markdown."
+    )
+
+
+def _couple_planner_system_prompt() -> str:
+    return (
+        "You are a couple financial planner for Indian households. "
+        "Return strict JSON only. "
+        "If mode is tax_optimized, return keys exactly: strategy, income_roles, allocation_plan, nps_strategy, hra_strategy, sip_split, future_adjustment_notes. "
+        "If mode is equal, return keys exactly: strategy, expense_split, savings_split, tax_note. "
+        "Respect provided partner tax analyses. If tax analyses are missing, assume they are already computed upstream and included in input payload. "
+        "Do not include markdown."
+    )
+
+
+def _student_planner_system_prompt() -> str:
+    return (
+        "You are a student investment planning and education assistant for Indian beginners. "
+        "Return strict JSON only with keys: sip_plan, learning_resources, qa_answers. "
+        "sip_plan must include monthly_investment, allocation_strategy, estimated_growth, timeline. "
+        "learning_resources must be list of objects with title, level, category, answer. "
+        "qa_answers must be list of objects with question, answer. "
+        "Always include an answer for the question 'What is SIP?' in either learning_resources.answer or qa_answers. "
+        "Use simple beginner language and practical examples. Do not include markdown."
+    )
+
+
+async def generate_tax_wizard_analysis(user_inputs: Dict[str, Any]) -> Dict[str, Any]:
+    parsed = await _groq_chat_completion(
+        messages=[
+            {"role": "system", "content": _tax_wizard_system_prompt()},
+            {"role": "user", "content": json.dumps({"module": "tax_wizard", "user_inputs": user_inputs}, ensure_ascii=True)},
+        ],
+        temperature=0.1,
+    )
+
+    return {
+        "provider": "groq",
+        "model": DEFAULT_GROQ_MODEL,
+        "tax_analysis": parsed.get("tax_analysis", {}),
+        "tax_bracket": parsed.get("tax_bracket", "5%"),
+        "missed_deductions": parsed.get("missed_deductions", []),
+        "recommendations": parsed.get("recommendations", []),
+        "income_profile": parsed.get("income_profile", {}),
+    }
+
+
+async def generate_couple_money_planner_analysis(
+    partner1: Dict[str, Any],
+    partner2: Dict[str, Any],
+    mode: str,
+) -> Dict[str, Any]:
+    p1 = dict(partner1)
+    p2 = dict(partner2)
+
+    if not isinstance(p1.get("tax_analysis"), dict):
+        p1["tax_analysis"] = await generate_tax_wizard_analysis(
+            {
+                "salary_breakdown": p1.get("salary_breakdown", {}),
+                "salary_period": p1.get("salary_period", "monthly"),
+                "deductions": p1.get("deductions", {}),
+                "risk_profile": p1.get("risk_profile", "moderate"),
+                "additional_income_streams": p1.get("additional_income_streams", []),
+                "future_income_change": p1.get("future_income_change"),
+            }
+        )
+
+    if not isinstance(p2.get("tax_analysis"), dict):
+        p2["tax_analysis"] = await generate_tax_wizard_analysis(
+            {
+                "salary_breakdown": p2.get("salary_breakdown", {}),
+                "salary_period": p2.get("salary_period", "monthly"),
+                "deductions": p2.get("deductions", {}),
+                "risk_profile": p2.get("risk_profile", "moderate"),
+                "additional_income_streams": p2.get("additional_income_streams", []),
+                "future_income_change": p2.get("future_income_change"),
+            }
+        )
+
+    parsed = await _groq_chat_completion(
+        messages=[
+            {"role": "system", "content": _couple_planner_system_prompt()},
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "module": "couple_planner",
+                        "mode": mode,
+                        "partner1": p1,
+                        "partner2": p2,
+                    },
+                    ensure_ascii=True,
+                ),
+            },
+        ],
+        temperature=0.1,
+    )
+
+    if mode == "equal":
+        return {
+            "provider": "groq",
+            "model": DEFAULT_GROQ_MODEL,
+            "strategy": "equal",
+            "expense_split": parsed.get("expense_split", {}),
+            "savings_split": parsed.get("savings_split", {}),
+            "tax_note": parsed.get("tax_note", "Tax brackets are shown for awareness, but allocations are kept equal by design."),
+        }
+
+    return {
+        "provider": "groq",
+        "model": DEFAULT_GROQ_MODEL,
+        "strategy": "tax_optimized",
+        "income_roles": parsed.get("income_roles", {}),
+        "allocation_plan": parsed.get("allocation_plan", {}),
+        "nps_strategy": parsed.get("nps_strategy", ""),
+        "hra_strategy": parsed.get("hra_strategy", ""),
+        "sip_split": parsed.get("sip_split", {}),
+        "future_adjustment_notes": parsed.get("future_adjustment_notes", ""),
+    }
+
+
+async def generate_student_sip_analysis(user_inputs: Dict[str, Any]) -> Dict[str, Any]:
+    parsed = await _groq_chat_completion(
+        messages=[
+            {"role": "system", "content": _student_planner_system_prompt()},
+            {"role": "user", "content": json.dumps({"module": "student_sip", "user_inputs": user_inputs}, ensure_ascii=True)},
+        ],
+        temperature=0.2,
+    )
+
+    resources = parsed.get("learning_resources", [])
+    qa_answers = parsed.get("qa_answers", [])
+
+    has_sip_answer = any(
+        isinstance(item, dict)
+        and str(item.get("title", "")).strip().lower() == "what is sip?"
+        and bool(str(item.get("answer", "")).strip())
+        for item in resources
+    ) or any(
+        isinstance(item, dict)
+        and "what is sip" in str(item.get("question", "")).strip().lower()
+        and bool(str(item.get("answer", "")).strip())
+        for item in qa_answers
+    )
+
+    if not has_sip_answer:
+        qa_answers.append(
+            {
+                "question": "What is SIP?",
+                "answer": "SIP means Systematic Investment Plan. You invest a fixed amount every month in a mutual fund, which helps build discipline and reduces timing risk.",
+            }
+        )
+
+    return {
+        "provider": "groq",
+        "model": DEFAULT_GROQ_MODEL,
+        "sip_plan": parsed.get("sip_plan", {}),
+        "learning_resources": resources,
+        "qa_answers": qa_answers,
+    }
+
+
+def _combined_planner_insights_system_prompt() -> str:
+    return (
+        "You are a financial summarization assistant. "
+        "Given tax wizard, couple strategy, and student module outputs, return strict JSON with key combined_insights as an array of 4 to 6 concise actionable strings. "
+        "Do not include markdown."
+    )
+
+
+async def generate_combined_planner_insights(
+    tax_wizard_summary: Dict[str, Any],
+    couple_strategy: Dict[str, Any],
+    student_module: Dict[str, Any],
+) -> List[str]:
+    parsed = await _groq_chat_completion(
+        messages=[
+            {"role": "system", "content": _combined_planner_insights_system_prompt()},
+            {
+                "role": "user",
+                "content": json.dumps(
+                    {
+                        "tax_wizard_summary": tax_wizard_summary,
+                        "couple_strategy": couple_strategy,
+                        "student_module": student_module,
+                    },
+                    ensure_ascii=True,
+                ),
+            },
+        ],
+        temperature=0.2,
+    )
+    insights = parsed.get("combined_insights", [])
+    if not isinstance(insights, list):
+        return []
+    return [str(i) for i in insights if isinstance(i, str)]

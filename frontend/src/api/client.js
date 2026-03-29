@@ -36,6 +36,30 @@ export const healthApi = {
   }),
 }
 
+// Planner (Tax Wizard, Couple Planner, Student SIP)
+export const plannerApi = {
+  taxWizard: (inputs) => request('/planner/tax-wizard', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(inputs),
+  }),
+  couplePlanner: (inputs) => request('/planner/couple-money-planner', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(inputs),
+  }),
+  studentSipPlanner: (inputs) => request('/planner/student-sip-planner', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(inputs),
+  }),
+  unifiedPlanner: (inputs) => request('/planner/unified-financial-intelligence', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(inputs),
+  }),
+}
+
 // Market
 export const marketApi = {
   stats: () => request('/market/stats'),

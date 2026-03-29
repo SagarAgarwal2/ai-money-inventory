@@ -99,7 +99,7 @@ export default function MoneyHealth() {
           <StepSection title="📈 Investment Diversification" desc="Where is your money invested?">
             <label style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, display: 'block' }}>Select all asset classes you currently hold:</label>
             {[['equity_mf', '🏦 Equity Mutual Funds'], ['debt_mf', '💰 Debt Mutual Funds'], ['ppf', '🏛️ PPF / EPF'], ['fd', '📄 Fixed Deposits'], ['stocks', '📊 Direct Stocks'], ['gold', '🥇 Gold / SGBs'], ['real_estate', '🏠 Real Estate']].map(([val, label]) => (
-              <label key={val} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px', marginBottom: 6, border: `1.5px solid ${form.asset_classes.includes(val) ? 'var(--accent)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', cursor: 'pointer', transition: 'border-color 0.15s', background: form.asset_classes.includes(val) ? 'var(--accent-light)' : 'white' }}>
+              <label key={val} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px', marginBottom: 6, border: `1.5px solid ${form.asset_classes.includes(val) ? 'var(--accent)' : 'var(--border)'}`, borderRadius: 'var(--radius-sm)', cursor: 'pointer', transition: 'border-color 0.15s', background: form.asset_classes.includes(val) ? 'var(--accent-light)' : 'var(--bg-card-2)' }}>
                 <input type="checkbox" checked={form.asset_classes.includes(val)} style={{ accentColor: 'var(--accent)' }}
                   onChange={e => set('asset_classes', e.target.checked ? [...form.asset_classes, val] : form.asset_classes.filter(a => a !== val))} />
                 <span style={{ fontSize: 13, fontWeight: form.asset_classes.includes(val) ? 600 : 400 }}>{label}</span>
@@ -199,7 +199,7 @@ function ScoreView({ result, onReset }) {
       </div>
 
       {/* Hero score */}
-      <div className="card" style={{ marginBottom: 20, background: `linear-gradient(135deg, ${color}10, white)`, border: `1px solid ${color}30`, display: 'flex', alignItems: 'center', gap: 32, padding: '32px' }}>
+      <div className="card" style={{ marginBottom: 20, background: `linear-gradient(135deg, ${color}1f, var(--bg-card))`, border: `1px solid ${color}55`, display: 'flex', alignItems: 'center', gap: 32, padding: '32px' }}>
         <ScoreRing score={score} max={100} size={140} color={color} label={status} />
         <div>
           <div style={{ fontSize: 40 }}>{statusIcon}</div>
@@ -213,7 +213,7 @@ function ScoreView({ result, onReset }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 20 }}>
         {/* Dimension breakdown */}
         <div className="card">
           <SectionHeader title="Dimension Scores" />
@@ -265,7 +265,7 @@ function ScoreView({ result, onReset }) {
       </div>
 
       {/* Detailed dimension cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 20 }}>
         {Object.entries(details).map(([dim, d]) => (
           <DimCard key={dim} dim={dim} detail={d} />
         ))}

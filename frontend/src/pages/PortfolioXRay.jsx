@@ -1,4 +1,4 @@
-import { AlertTriangle, RefreshCw, Upload } from 'lucide-react'
+import { AlertTriangle, CheckCircle, RefreshCw, Upload } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import {
     Bar,
@@ -83,7 +83,7 @@ function UploadView({ onFile, dragging, setDragging }) {
       </div>
 
       <div className="card" style={{ marginTop: 20, display: 'flex', alignItems: 'center', gap: 12, background: 'var(--surface-3)', border: 'none' }}>
-        <div style={{ width: 36, height: 36, background: 'white', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: 'var(--shadow-sm)' }}>🔒</div>
+        <div style={{ width: 36, height: 36, background: 'var(--bg-card)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: 'var(--shadow-sm)' }}>🔒</div>
         <div style={{ fontSize: 13, color: 'var(--muted)', lineHeight: 1.5 }}>
           <strong style={{ color: 'var(--ink)' }}>Privacy First:</strong> Your CAMS PDF is processed entirely in memory. PII (name, PAN, folio numbers) is stripped before any analysis. Zero data stored post-processing.
         </div>
@@ -112,7 +112,7 @@ function AnalysisView({ data, activeTab, setActiveTab, onReset }) {
       </div>
 
       {/* KPI row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(185px, 1fr))', gap: 14, marginBottom: 24 }}>
         <StatCard label="Current Value" value={fmt.inr(summary.total_current_value)} sub={`Invested: ${fmt.inr(summary.total_invested)}`} trend={1} color="var(--accent)" />
         <StatCard label="Total Gain" value={fmt.inr(summary.total_gain)} sub={`${fmt.pct(summary.total_gain_pct)} absolute return`} trend={summary.total_gain > 0 ? 1 : -1} color={summary.total_gain > 0 ? 'var(--green)' : 'var(--red)'} />
         <StatCard label="Portfolio XIRR" value={`${xirr.xirr}%`} sub={`Benchmark: 14.5% | Gap: ${fmt.pct(xirr_gap)}`} trend={xirr_gap} color={xirr_gap > 0 ? 'var(--green)' : 'var(--amber)'} />
@@ -146,7 +146,7 @@ function OverviewTab({ data }) {
   const pieData = Object.entries(alloc).map(([k, v]) => ({ name: k, value: v }))
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20 }}>
       <div className="card">
         <SectionHeader title="Asset Allocation" subtitle={`Current vs age-appropriate target (deviation: ${data.asset_allocation?.equity_deviation_pct > 0 ? '+' : ''}${data.asset_allocation?.equity_deviation_pct}% equity)`} />
         <ResponsiveContainer width="100%" height={200}>
@@ -215,7 +215,7 @@ function XirrTab({ data }) {
       </div>
       <div className="card">
         <SectionHeader title="Fund-wise XIRR Details" />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 12 }}>
           {funds.map((f, i) => (
             <div key={i} style={{ padding: '14px', border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)', borderLeft: `3px solid ${f.xirr > 14.5 ? 'var(--green)' : f.xirr > 10 ? 'var(--amber)' : 'var(--red)'}` }}>
               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, lineHeight: 1.3 }}>{f.scheme_name.split(' - ')[0]}</div>
@@ -270,7 +270,7 @@ function OverlapTab({ data }) {
                   <tr key={i}>
                     <td style={{ padding: '6px 8px', fontWeight: 600, fontSize: 11, color: 'var(--ink-3)', maxWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{names[i]?.split(' ')[0]}</td>
                     {row.map((val, j) => {
-                      const bg = i === j ? '#f1f5f9' : val > 60 ? '#fde8e8' : val > 40 ? '#fef3c7' : val > 20 ? '#f0fdf4' : 'white'
+                      const bg = i === j ? 'rgba(148, 163, 184, 0.16)' : val > 60 ? 'rgba(239, 68, 68, 0.2)' : val > 40 ? 'rgba(245, 158, 11, 0.2)' : val > 20 ? 'rgba(16, 185, 129, 0.2)' : 'var(--bg-card)'
                       const color = i === j ? 'var(--muted)' : val > 60 ? 'var(--red)' : val > 40 ? 'var(--amber)' : 'var(--green)'
                       return <td key={j} style={{ padding: '8px', textAlign: 'center', background: bg, fontWeight: val > 40 && i !== j ? 700 : 400, color, transition: 'background 0.2s' }}>{val}%</td>
                     })}
@@ -304,7 +304,7 @@ function ExpenseTab({ data }) {
 
   return (
     <div style={{ display: 'grid', gap: 20 }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 14 }}>
         <div className="card" style={{ borderTop: '3px solid var(--red)', textAlign: 'center' }}>
           <div style={{ fontSize: 12, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Total Annual Drag</div>
           <div style={{ fontSize: 32, fontWeight: 800, fontFamily: 'var(--font-display)', color: 'var(--red)' }}>{fmt.inr(data.expense_drag?.total_annual_drag_inr)}</div>

@@ -67,7 +67,7 @@ export default function Dashboard({ onNavigate }) {
       </div>
 
       {/* KPI Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 16, marginBottom: 28 }}>
         <StatCard label="Portfolio Value" value={portfolio ? fmt.inr(totalValue) : '—'} sub={portfolio ? `${fmt.inr(totalGain)} total gain` : 'Upload CAMS to compute'} trend={portfolio ? 1 : 0} color="var(--accent)" delay={0} icon={TrendingUp} />
         <StatCard label="Portfolio XIRR" value={portfolio ? `${portfolioXirr}%` : '—'} sub={portfolio ? 'vs 14.5% Nifty 50 TRI' : 'Available after analysis'} trend={portfolio ? portfolioXirr - 14.5 : 0} color={portfolio ? (portfolioXirr > 14.5 ? 'var(--green)' : 'var(--amber)') : 'var(--muted-2)'} delay={80} icon={Activity} />
         <StatCard label="Money Health Score" value={health ? `${healthScore}/100` : '—'} sub={health ? healthStatus : 'Complete assessment'} trend={health ? (healthScore > 60 ? 1 : -1) : 0} color={health?.overall_color || 'var(--muted-2)'} delay={160} icon={HeartPulse} />
@@ -75,7 +75,7 @@ export default function Dashboard({ onNavigate }) {
       </div>
 
       {/* Main content grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 20, marginBottom: 20 }}>
         {/* Allocation chart */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
@@ -157,7 +157,7 @@ export default function Dashboard({ onNavigate }) {
       </div>
 
       {/* Quick Action Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 20 }}>
         <QuickAction
           icon={<ScanLine />} color="var(--accent)" title="Analyze Portfolio"
           desc="Upload your CAMS statement for XIRR, overlap & rebalancing insights"
@@ -173,6 +173,26 @@ export default function Dashboard({ onNavigate }) {
           desc="5-minute profiling across 6 dimensions with priority action list"
           cta="Get Score" onClick={() => onNavigate('health')}
         />
+        <QuickAction
+          icon={<TaxIcon />} color="var(--green)" title="Tax Wizard"
+          desc="Compare old vs new regime, detect missed deductions, and get tax actions"
+          cta="Open Tax Wizard" onClick={() => onNavigate('taxWizard')}
+        />
+        <QuickAction
+          icon={<CoupleIcon />} color="var(--purple)" title="Couple Planner"
+          desc="Build tax-optimized or equal strategy with partner-specific allocations"
+          cta="Open Couple Planner" onClick={() => onNavigate('couplePlanner')}
+        />
+        <QuickAction
+          icon={<StudentIcon />} color="var(--amber)" title="Student SIP"
+          desc="Get beginner SIP amount, allocation strategy, growth estimate, and learning hub"
+          cta="Open Student SIP" onClick={() => onNavigate('studentSip')}
+        />
+        <QuickAction
+          icon={<BlogIcon />} color="var(--accent)" title="Market Blog"
+          desc="Latest market details, SIP analysis, and stock market watch updates"
+          cta="Open Blog" onClick={() => onNavigate('blog')}
+        />
       </div>
 
       <Disclaimer text={portfolio?.sebi_disclaimer || 'AI-generated analysis. Not SEBI-registered investment advice.'} />
@@ -182,6 +202,10 @@ export default function Dashboard({ onNavigate }) {
 
 function ScanLine() { return <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18"/></svg> }
 function FlameIcon() { return <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg> }
+function TaxIcon() { return <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg> }
+function CoupleIcon() { return <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><circle cx="8" cy="8" r="3"/><circle cx="16" cy="8" r="3"/><path d="M3 19a5 5 0 0110 0M11 19a5 5 0 0110 0"/></svg> }
+function StudentIcon() { return <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M7 11v4a5 5 0 0010 0v-4"/></svg> }
+function BlogIcon() { return <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h10M7 12h6M7 16h8"/></svg> }
 
 function QuickAction({ icon, color, title, desc, cta, onClick }) {
   return (

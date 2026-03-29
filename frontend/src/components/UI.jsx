@@ -104,7 +104,7 @@ export function SectionHeader({ title, subtitle, action }) {
 // ── Disclaimer Banner ────────────────────────────────────────────────────
 export function Disclaimer({ text }) {
   return (
-    <div style={{ background: 'var(--amber-light)', border: '1px solid #fde68a', borderRadius: 'var(--radius-sm)', padding: '10px 14px', fontSize: 12, color: '#92400e', marginTop: 16, lineHeight: 1.5 }}>
+    <div style={{ background: 'var(--amber-light)', border: '1px solid rgba(245, 158, 11, 0.35)', borderRadius: 'var(--radius-sm)', padding: '10px 14px', fontSize: 12, color: '#fcd28a', marginTop: 16, lineHeight: 1.5 }}>
       ⚠️ {text}
     </div>
   )
@@ -128,10 +128,10 @@ export function EmptyState({ icon: Icon, title, description, action }) {
 export function Tag({ children, color = 'blue' }) {
   const colors = {
     blue: { bg: 'var(--accent-light)', text: 'var(--accent-2)' },
-    green: { bg: 'var(--green-light)', text: '#065f46' },
-    red: { bg: 'var(--red-light)', text: '#9b1c1c' },
-    amber: { bg: 'var(--amber-light)', text: '#92400e' },
-    purple: { bg: 'var(--purple-light)', text: '#5b21b6' },
+    green: { bg: 'var(--green-light)', text: '#9bf0d4' },
+    red: { bg: 'var(--red-light)', text: '#ffb5b5' },
+    amber: { bg: 'var(--amber-light)', text: '#fcd28a' },
+    purple: { bg: 'var(--purple-light)', text: '#d8c1ff' },
   }
   const c = colors[color] || colors.blue
   return (

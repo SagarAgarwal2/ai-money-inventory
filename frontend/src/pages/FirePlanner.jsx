@@ -42,7 +42,7 @@ export default function FirePlanner() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
         {/* Personal & Income */}
         <div className="card">
           <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 18 }}>📊 Personal & Income</h3>
@@ -154,14 +154,14 @@ function ResultView({ result, onReset }) {
       </div>
 
       {/* KPI Row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 24 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: 14, marginBottom: 24 }}>
         <StatCard label="FIRE Corpus Needed" value={fmt.inr(fire.fire_corpus_inr)} sub={`Monthly expenses at retirement: ${fmt.inr(fire.monthly_expenses_at_retirement)}`} color="var(--purple)" trend={0} />
         <StatCard label="Required Monthly SIP" value={fmt.inr(summary.recommended_total_sip)} sub={`${summary.surplus_utilization_pct}% of ₹${fmt.inr(summary.investable_surplus)} surplus`} color="var(--accent)" trend={0} />
         <StatCard label="Investable Surplus" value={fmt.inr(summary.investable_surplus)} sub={`Income ${fmt.inr(summary.monthly_income)} − Exp ${fmt.inr(summary.monthly_expenses)}`} color="var(--green)" trend={1} />
         <StatCard label="Tax Savings Available" value={fmt.inr((tax.total_deduction || 0) * 0.3)} sub={`₹${fmt.inr(tax.total_deduction)} deductions at 30% slab`} color="var(--amber)" trend={1} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 20 }}>
         {/* SIP Allocation */}
         <div className="card">
           <SectionHeader title="Recommended SIP Allocation" subtitle="Across fund categories based on risk profile & timeline" />
